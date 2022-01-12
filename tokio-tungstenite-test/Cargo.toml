@@ -13,3 +13,8 @@ futures-channel = "*"
 url = "*"
 tokio-tungstenite = { features = ["native-tls"] }
 serde_json = "*"
+serde = { features = ["derive"] }
+serde_with = { features = ["chrono"] }
+rust_decimal = "*"
+rust_decimal_macros = "*"
+chrono = { features = ["serde"] }
