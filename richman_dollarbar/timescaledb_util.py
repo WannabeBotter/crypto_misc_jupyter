@@ -194,7 +194,7 @@ class TimeScaleDBUtil:
         
         return None
 
-    def load_dollarbars(exchange='ftx', symbol='BTC-PERP', interval=5_000_000, from_str, to_str):
+    def load_dollarbars(exchange='ftx', symbol='BTC-PERP', interval=5_000_000, from_str=None, to_str=None):
         _table_name = self.get_dollarbar_table_name(exchange, symbol, interval)
 
         _sql = f"SELECT * FROM \"{table_name}\" WHERE datetime >= '{from_str}' AND datetime < '{to_str}' ORDER BY dollar_cumsum ASC"
