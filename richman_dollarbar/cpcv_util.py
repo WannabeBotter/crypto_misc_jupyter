@@ -267,3 +267,30 @@ def purge(cv: BaseTimeSeriesCrossValidator, train_indices: np.ndarray,
     
 
     return np.concatenate((train_indices_1, train_indices_2))
+
+def cpcv_split(df = None, n_splits = 6, n_test_splits = 2, time_gap = 100, embargo_td = 0):
+    """
+    与えられたデータフレームから、CPCVのトレーニング区間とバリデーション区間を分割し、インデックスリストを生成して返す
+    パラメータ
+    ----------
+    df: pandas.DataFrame
+        分割対象のデータフレーム。データの内容は利用せず、行数とインデックスのみ用いる
+    n_splits : int, default=10
+        Number of folds. Must be at least 2.
+    n_test_splits : int, default=2
+        Number of folds used in the test set. Must be at least 1.
+    embargo_td : pd.Timedelta, default=0
+        Embargo period (see explanations above).
+    返り値
+    -------
+    list
+        ひとつのfoldに対応したタプル (トレーニング区間とバリデーション区間のインデックスの一覧を格納したnumpy arrayを持つ) を全fold分格納したリスト
+    """
+    _df = pd.DataFrame(range(0, len(df), 1))
+
+    cpkf = CombPurgedKFoldCV(n_splits = n_splits, n_test_splits = n_test_splits, embargo_td = embargo_td)
+    t1_ = _df.index
+    t1 = pd.Series(t1_).shift(time_gap).fillna(0).astype(int)
+    t2 = pd.Series(t1_).shift(-time_gap).fillna(1e12).astype(int)
+
+    return list(cpkf.split(_df, pred_times=t1, eval_times=t2))
