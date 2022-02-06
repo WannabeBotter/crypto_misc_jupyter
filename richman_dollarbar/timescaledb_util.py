@@ -194,10 +194,10 @@ class TimeScaleDBUtil:
         
         return None
 
-    def load_dollarbars(exchange='ftx', symbol='BTC-PERP', interval=5_000_000, from_str=None, to_str=None):
+    def load_dollarbars(self, exchange='ftx', symbol='BTC-PERP', interval=5_000_000, from_str=None, to_str=None):
         _table_name = self.get_dollarbar_table_name(exchange, symbol, interval)
-
-        _sql = f"SELECT * FROM \"{table_name}\" WHERE datetime >= '{from_str}' AND datetime < '{to_str}' ORDER BY dollar_cumsum ASC"
-        _df = _dbutil.read_sql_query(sql = _sql)
-        _df = _df[['datetime', 'open', 'high', 'low', 'close', 'dollar_volume', 'dollar_buy_volume', 'dollar_sell_volume', 'dollar_liquidation_buy_volume', 'dollar_liquidation_sell_volume', 'dollar_cumsum', 'dollar_buy_cumsum', 'dollar_sell_cumsum']]
-        return df
+        _sql = f"SELECT * FROM \"{_table_name}\" WHERE datetime >= '{from_str}' AND datetime < '{to_str}' ORDER BY dollar_cumsum ASC"
+        
+        _df = self.read_sql_query(sql = _sql)
+        _df = _df[['datetime', 'open', 'high', 'low', 'close', 'dollar_volume', 'dollar_buy_volume', 'dollar_sell_volume', 'dollar_liquidation_buy_volume', 'dollar_liquidation_sell_volume', 'dollar_cumsum', 'buy_dollar_cumsum', 'sell_dollar_cumsum']]
+        return _df
