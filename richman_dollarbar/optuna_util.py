@@ -66,4 +66,7 @@ class LightGBMRegressionUtil:
         return df_predict.mean(axis=1) # 残った予測値を使って平均値を計算する
     
     def save_model(self, filename = 'model.xz', compress=True):
-        joblib.dump(self.cvbooster, filename, compress)   
+        joblib.dump(self.cvbooster, filename, compress)
+    
+    def get_cvbooster(self):
+        return self.cvbooster
