@@ -108,6 +108,11 @@ class TimeScaleDBUtil:
                 f" SELECT create_hypertable ('{_table_name}', 'datetime');")
         self.sql_execute(_sql)
         
+        # 累積出来高記録用Maerialized viewを作成
+        _sql = (f'DROP MATERIALIZED VIEW IF EXISTS "{_table_name}_dollar_cumsum_daily" CASCADE;'
+                f'CREATE MATERIALIZED VIEW "{_table_name}_dollar_cumsum_daily" WITH (timescaledb.continuous) AS SELECT time_bucket(INTERVAL "1 day", datetime) AS time, MAX(dollar_cumsum) AS dollar_cumsum, MAX(buy_dollar_cumsum) AS buy_dollar_cumsum, MAX(sell_dollar_cumsum) AS sell_dollar_cumsum, LAST(price, datetime) AS close FROM "{_table_mane}" GROUP BY time WITH NO DATA')
+        self.sql_execute(_sql)
+        
     def get_latest_trade(self, exchange='ftx', symbol='BTC-PERP'):
         _table_name = self.get_trade_table_name(exchange, symbol)
         
