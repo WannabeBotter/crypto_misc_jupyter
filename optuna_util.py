@@ -59,10 +59,11 @@ class LightGBMRegressionUtil:
         if folds is not None:
             for index, fold in enumerate(folds):
                 if predict_training == True:
-                    df_predict.iloc[fold[1], index] = np.nan
+                    set_necessary = set(fold[0])
                 else:
-                    df_predict.iloc[fold[0], index] = np.nan
-        
+                    set_necessary = set(fold[1])
+                list_unwanted_index = [e for e in df_predict.index if e not in set_necessary]
+                df_predict.iloc[list_unwanted_index, index] = np.nan
         return df_predict.mean(axis=1) # 残った予測値を使って平均値を計算する
     
     def save_model(self, filename = 'model.xz', compress=True):
