@@ -286,11 +286,16 @@ def cpcv_split(df = None, n_splits = 6, n_test_splits = 2, time_gap = 100, embar
     list
         ひとつのfoldに対応したタプル (トレーニング区間とバリデーション区間のインデックスの一覧を格納したnumpy arrayを持つ) を全fold分格納したリスト
     """
-    _df = pd.DataFrame(range(0, len(df), 1))
+    assert df.index.inferred_type == 'integer', 'dfで整数型indexを利用してください'
+    
+    # 与えられたDataFrameのindexが0から始まる連番であることを確認する
+    _index_diff = pd.Series(df.index).diff()
+    if len(_index_diff[_index_diff > 1]) > 0 or df.index[0] != 0:
+        raise ValueError('dfで0から始まる連番のindexを利用してください')
 
     cpkf = CombPurgedKFoldCV(n_splits = n_splits, n_test_splits = n_test_splits, embargo_td = embargo_td)
-    t1_ = _df.index
+    t1_ = df.index
     t1 = pd.Series(t1_).shift(time_gap).fillna(0).astype(int)
     t2 = pd.Series(t1_).shift(-time_gap).fillna(1e12).astype(int)
 
-    return list(cpkf.split(_df, pred_times=t1, eval_times=t2))
+    return list(cpkf.split(df, pred_times=t1, eval_times=t2))
